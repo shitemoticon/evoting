@@ -4,7 +4,7 @@ from datetime import date
 
 
 class Candidate(models.Model):
-    candidate_id = models.IntegerField(max_length=10,blank=False,null=False,primary_key=True)
+    candidate_id = models.IntegerField(blank=False,null=False,primary_key=True)
     info = models.ForeignKey(Account, related_name='candidate', on_delete=models.CASCADE)
     message = models.TextField(null=False,blank=False) 
 
@@ -28,6 +28,10 @@ class Election(models.Model):
         else:
             return False
 
+    def save(self,*args,**kwargs):
+        if self.has_started():
+            self.started = True
+        super().save(*args,**kwargs)
         
 
 
