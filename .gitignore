@@ -1,4 +1,6 @@
 settings.py
+__pycache__/
+*.py[cod]
 # local env files
 .env.local
 .env.*.local
