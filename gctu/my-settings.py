@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your secret key from when you created the project'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -48,8 +48,8 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'account.Account'
 
 CORS_ALLOWED_ORIGINS = [
+    # put your frontend url here (example: http://localhost:8080)
     # don't set it if frontend is not hosted on the same machine as backend
-    'address to where your frontend is hosted'
 ]
 
 
