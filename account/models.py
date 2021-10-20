@@ -10,7 +10,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 class AccountManager(BaseUserManager):
-    def create_superuser(self,email,password,first_name,last_name,staff_id,department):
+    def create_superuser(self,email,password,first_name,last_name,staff_id,department,**kwargs):
         
         user = self.model(
             email = self.normalize_email(email),
@@ -18,7 +18,7 @@ class AccountManager(BaseUserManager):
             last_name = last_name,
             staff_id = staff_id,
             department = department,
-            role = 'admin',
+            is_admin = True
         )
 
         user.set_password(password)
@@ -35,7 +35,6 @@ class AccountManager(BaseUserManager):
                 last_name = last_name,
                 student_id = student_id,
                 course = course,
-                role = 'student',
             )
 
             user.set_password(password)
@@ -44,8 +43,6 @@ class AccountManager(BaseUserManager):
             return user
 
 
-
-USER_ROLES = [('admin', 'admin'), ('student', 'student')]
 
 class Account(AbstractBaseUser):
     student_id = models.CharField(max_length=100, blank=True)
@@ -60,7 +57,7 @@ class Account(AbstractBaseUser):
     course = models.CharField(max_length=255,blank=True)
     department = models.CharField(max_length=255,blank=True)
 
-    role = models.CharField(max_length=50, choices=USER_ROLES ,default='student')
+    is_admin = models.BooleanField(default=False)
     is_candidate = models.BooleanField(default=False)
 
     profile_picture = models.ImageField(upload_to='media/profile_pictures',null=True,blank=True)
@@ -81,6 +78,8 @@ class Account(AbstractBaseUser):
         'department', 
     ]
 
+    class Meta:
+        db_table = 'users'
 
     def __str__(self) -> str:
         return self.first_name + '' + self.last_name
@@ -106,6 +105,20 @@ class Account(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+    @property
+    def is_superuser(self):
+        return self.is_admin
+
+    def has_perm(self, perm, obj=None):
+       return self.is_admin
+
+    def has_module_perms(self, app_label):
+       return self.is_admin
+
+    @is_staff.setter
+    def is_staff(self, value):
+        self._is_staff = value
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

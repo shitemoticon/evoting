@@ -1,17 +1,27 @@
 from django.db import models
 from account.models import Account
 from datetime import date
+import random
+import string
 
+
+def gen_id(size=10,chars=string.ascii_uppercase + string.digits):
+    return "".join(random.SystemRandom().choice(chars) for _ in range(size)) 
 
 class Candidate(models.Model):
-    candidate_id = models.IntegerField(blank=False,null=False,primary_key=True)
+    ID = gen_id()
+    candidate_id = models.CharField(max_length=10,unique=True,primary_key=True,default=ID)
     info = models.ForeignKey(Account, related_name='candidate', on_delete=models.CASCADE)
     message = models.TextField(null=False,blank=False) 
+
+    class Meta:
+        db_table = 'candidates'
 
 
 
 class Election(models.Model):
-    election_id = models.TextField(max_length=5,blank=False,null=False,primary_key=True)
+    ID = gen_id()
+    election_id = models.CharField(max_length=10,unique=True,primary_key=True,default=ID)
     title = models.CharField(max_length=255,blank=False,null=False)
     candidates = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now=True)
@@ -21,16 +31,18 @@ class Election(models.Model):
 
     class Meta:
         ordering = ('-date_created',)
+        db_table = 'elections'
 
     def has_started(self):
         if self.started or self.start_date == date.today():
             return True
         else:
-            return False
+            return False   
 
     def save(self,*args,**kwargs):
         if self.has_started():
             self.started = True
+
         super().save(*args,**kwargs)
         
 
@@ -42,3 +54,6 @@ class Vote(models.Model):
     election = models.ForeignKey(Election, related_name='election', on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, related_name='candidate', on_delete=models.CASCADE)
     date_voted = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'votes'
