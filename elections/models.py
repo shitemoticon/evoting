@@ -23,7 +23,7 @@ class Election(models.Model):
     ID = gen_id()
     election_id = models.CharField(max_length=10,unique=True,primary_key=True,default=ID)
     title = models.CharField(max_length=255,blank=False,null=False)
-    candidates = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    candidates = models.ManyToManyField(Candidate, related_name='election')
     date_created = models.DateTimeField(auto_now=True)
     started = models.BooleanField(blank=True,null=True)
     start_date = models.DateField(auto_now=False,blank=False,null=False)
@@ -50,7 +50,7 @@ class Election(models.Model):
 
 
 class Vote(models.Model):
-    voter = models.ForeignKey(Account, related_name='voter', on_delete=models.CASCADE)
+    voter = models.ForeignKey(Account, related_name='vote', on_delete=models.CASCADE)
     election = models.ForeignKey(Election, related_name='election', on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, related_name='candidate', on_delete=models.CASCADE)
     date_voted = models.DateTimeField(auto_now=True)
