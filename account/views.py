@@ -42,8 +42,7 @@ class Login(APIView):
                 'email':user.email,
                 'first_name':user.first_name,
                 'last_name':user.last_name,
-                'student_id':user.student_id,
-                'staff_id':user.staff_id,
+                'is_admin':user.is_admin,
                 'course':user.course,
                 'department':user.department,
             }
